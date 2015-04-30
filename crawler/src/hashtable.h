@@ -43,4 +43,8 @@ typedef struct HashTable {
  */
 unsigned long JenkinsHash(const char *str, unsigned long mod);
 
+void initializeHashTable(HashTable *ht);
+
+void addToHashTable(HashTable *ht, HashTableNode *node);
+
 #endif // HASHTABLE_H
