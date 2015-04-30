@@ -16,6 +16,7 @@
 
 // ---------------- System includes e.g., <stdio.h>
 #include <string.h>                          // strlen
+#include <stdlib.h>
 
 // ---------------- Local includes  e.g., "file.h"
 #include "common.h"                          // common functionality
@@ -30,6 +31,30 @@
 // ---------------- Private variables
 
 // ---------------- Private prototypes
+
+void initializeHashTable(HashTable *ht){
+    int i;
+    for ( i = 0; i < MAX_HASH_SLOT; i++ ){
+        ht->table[i] = malloc(sizeof(HashTableNode));
+        ht->table[i]->url = NULL;
+        ht->table[i]->next = NULL;
+    }
+}
+
+void addToHashTable(HashTable *ht, const char *url){
+    unsigned long hashVal = JenkinsHash(node->url, 5);
+    if ( ht->table[hashVal] == NULL ){
+        strcpy(ht->table[hashVal]->url, node->url);
+    }
+    else{
+        HashTableNode *current = ht->table[hashVal]->next;
+        while ( current != NULL ){
+            current = current->next;
+        }
+        strcpy(current->url, url);
+        current->next
+    }
+}
 
 unsigned long JenkinsHash(const char *str, unsigned long mod)
 {
