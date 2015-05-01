@@ -1,8 +1,8 @@
 /* ========================================================================== */
 /* File: crawler.c - Tiny Search Engine web crawler
  *
- * Author:
- * Date:
+ * Author: Emily Old
+ * Date: April 2015
  *
  * Input:
  *
@@ -22,6 +22,7 @@
 #include <stdio.h>                           // printf
 
 #include <curl/curl.h>                       // curl functionality
+#include <string.h>
 // ---------------- Local includes  e.g., "file.h"
 #include "common.h"                          // common functionality
 #include "web.h"                             // curl and html functionality
@@ -43,7 +44,7 @@
 
 int main(int argc, char* argv[]){
 
-    struct WebPage seed;
+    //WebPage *seed = malloc(sizeof(WebPage));
 
     printf("Get cooking cs50!\n"
         "Translate the pseudo code. Data structures are in crawler.h\n"
@@ -55,26 +56,34 @@ int main(int argc, char* argv[]){
         exit(EXIT_FAILURE);
     }
 
-    
-   
 
+    // hashtable check
+    HashTable *ht = malloc (sizeof(HashTable));
+    initializeHashTable(ht);
+    addToHashTable(ht, argv[1]);
+    addToHashTable(ht, argv[1]);
+    
+    printf("%d", returnVal);
+    unsigned long hash = JenkinsHash(argv[1], 5);
+    printf("%s", ht->table[hash]->url);
+   
+    
     // init curl
     curl_global_init(CURL_GLOBAL_ALL);
     
-    seed.depth = 0;
+    seed->depth = 0;
 
-    seed.url = argv[1];
+    seed->url = malloc(sizeof(char*) * 1000);
+    strcpy(seed->url, argv[1]);
+    int status;
    
-    
-    if ( GetWebPage(&seed) == 0 ){
+    if ( (status = GetWebPage(seed)) == 0 ){
         fprintf(stderr, "%s was not able to be processed.", argv[1]);
     }
     else{
         printf("Good to go.");
     }
     
-    
-    printf("here\n");
     
     // setup seed page
 
