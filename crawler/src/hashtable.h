@@ -45,6 +45,8 @@ unsigned long JenkinsHash(const char *str, unsigned long mod);
 
 void initializeHashTable(HashTable *ht);
 
-void addToHashTable(HashTable *ht, HashTableNode *node);
+void addToHashTable(HashTable *ht, const char *url);
+
+int lookUpURL(HashTable *ht, const char *url);
 
 #endif // HASHTABLE_H
