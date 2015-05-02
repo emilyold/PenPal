@@ -19,7 +19,7 @@
 // ---------------- Structures/Types
 
 typedef struct ListNode {
-    WebPage *page;                           // the data for a given page
+    void *page;                           // the data for a given page
     struct ListNode *prev;                   // pointer to previous node
     struct ListNode *next;                   // pointer to next node
 } ListNode;
@@ -32,5 +32,11 @@ typedef struct List {
 // ---------------- Public Variables
 
 // ---------------- Prototypes/Macros
+
+void initializeList(List *theList);
+
+ListNode *pop(List *theList);
+
+void appendToList(List *theList, void *page);
 
 #endif // LIST_H
