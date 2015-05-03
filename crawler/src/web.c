@@ -115,7 +115,9 @@ int GetWebPage(WebPage* page)
     res = curl_easy_perform(curl_handle);
 
     // check response code
-    if(res != CURLE_OK) {
+    long respCode;
+    curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &respCode);
+    if(res != CURLE_OK || respCode == 404 ) {
         status = 0;
     }
 
