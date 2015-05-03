@@ -23,6 +23,11 @@
 
 #include <curl/curl.h>                       // curl functionality
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
 // ---------------- Local includes  e.g., "file.h"
 #include "common.h"                          // common functionality
 #include "web.h"                             // curl and html functionality
@@ -44,63 +49,145 @@
 
 int main(int argc, char* argv[]){
 
-    //WebPage *seed = malloc(sizeof(WebPage));
+    WebPage *seed = malloc(sizeof(WebPage));
 
-    printf("Get cooking cs50!\n"
-        "Translate the pseudo code. Data structures are in crawler.h\n"
-        "Good luck\n");
-    
+    struct stat path;
+    long depth;
+    char *ptr;
+
+    HashTable *ht;
+    List *theList;
+    int currentDepth = 0;
+    int docID = 1;
+    char *fileName = malloc(sizeof(char)*50);
+    char *depthString = malloc(sizeof(char)*5);
+   
     //check command line arguments
     if (argc != 4){
-        fprintf(stderr, "Crawler requires exactly 3 arguments");
+        fprintf(stderr, "Crawler requires exactly 3 arguments\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    if (stat(argv[2], &path) < 0){
+        fprintf(stderr, "%s is not a valid directory.\n", argv[2]);
+        exit(EXIT_FAILURE);
+    }
+    
+    depth = strtol(argv[3], &ptr, 10);
+    if( strlen(ptr) != 0){
+        fprintf(stderr, "The depth must be a single integer.\n");
+        exit(EXIT_FAILURE);
+    }
+    else if (depth > MAX_DEPTH){
+        fprintf(stderr, "Depth %s is too deep!\n", argv[3]);
         exit(EXIT_FAILURE);
     }
 
+    if ( strncmp(URL_PREFIX, argv[1], strlen(URL_PREFIX)) != 0 ){
+        fprintf(stderr, "URL provided is not in the permitted domain. Please choose a URL with the prefix: %s", URL_PREFIX);
+        exit(EXIT_FAILURE);
+    }
+    
 
-    // hashtable check
-    HashTable *ht = malloc (sizeof(HashTable));
-    initializeHashTable(ht);
-    addToHashTable(ht, argv[1]);
-    addToHashTable(ht, argv[1]);
-    
-    printf("%d", returnVal);
-    unsigned long hash = JenkinsHash(argv[1], 5);
-    printf("%s", ht->table[hash]->url);
-   
-    
     // init curl
     curl_global_init(CURL_GLOBAL_ALL);
+
+    //initialize data structures
+    ht = malloc(sizeof(HashTable));
+    theList = malloc(sizeof(List));
+
+    initializeHashTable(ht);
+    initializeList(theList);
+
     
-    seed->depth = 0;
+    // setup seed page
+    seed->depth = currentDepth;
+    currentDepth++;
 
     seed->url = malloc(sizeof(char*) * 1000);
     strcpy(seed->url, argv[1]);
+
+    // get seed webpage
     int status;
-   
+    
     if ( (status = GetWebPage(seed)) == 0 ){
         fprintf(stderr, "%s was not able to be processed.", argv[1]);
     }
-    else{
-        printf("Good to go.");
-    }
-    
-    
-    // setup seed page
-
-    
-
-
-    
-
-    // get seed webpage
 
     // write seed file
+    else{  
+        sprintf(fileName, "%s/%d", argv[2], docID);
+        docID++;
+        FILE *fp;
+        fp = fopen(fileName, "w");
+        fputs(seed->url, fp);
+        fputs("\n0\n", fp);
+        fputs(seed->html, fp);
+        fclose(fp);
+    }
 
     // add seed page to hashtable
-
+    if(lookUpURL(ht, seed->url) == 0){
+        addToHashTable(ht, seed->url);
+    }
+        
     // extract urls from seed page
+    int pos = 0;
+    char *result;
+    char *baseUrl = seed->url;
+
+    if(currentDepth <= depth){
+        printf("here\n");
+        
+        while( (pos = GetNextURL(seed->html, pos, baseUrl, &result)) > 0 ){
+            WebPage *pg = malloc(sizeof(WebPage));
+            pg->url = result;
+            pg->depth = currentDepth;
+            appendToList(theList, pg);
+            printf("added %s\n", pg->url);
+            printf("%d\n", pos);
+        }
+        currentDepth++;
+    }
 
     // while there are urls to crawl
+    ListNode *node = malloc(sizeof(ListNode));
+    while ( (node = pop(theList)) != NULL ){
+        WebPage *pg = malloc(sizeof(WebPage));
+        pg = node->page;
+        printf("%s %d %d\n", pg->url, pg->depth, currentDepth);
+        if(pg->depth > currentDepth){
+            currentDepth = pg->depth;
+        }
+        
+        if ( (status = GetWebPage(pg)) == 0 ){
+            fprintf(stderr, "%s was not able to be processed.\n", argv[1]);
+        }
+        else{
+            sprintf(fileName, "%s/%d", argv[2], docID);
+            sprintf(depthString, "\n%d\n", pg->depth);
+            docID++;
+            FILE *fp;
+            fp = fopen(fileName, "w");
+            fputs(pg->url, fp);
+            fputs(depthString, fp);
+            fputs(pg->html, fp);
+            fclose(fp);
+        }
+        
+        if( currentDepth <= depth ){
+            pos = 0;
+            while( (pos = GetNextURL(pg->html, pos, baseUrl, &result)) > 0 ){
+                WebPage *pg = malloc(sizeof(WebPage));
+                pg->url = result;
+                pg->depth = currentDepth;
+                appendToList(theList, pg);
+            }
+            currentDepth++;
+        }
+        sleep(INTERVAL_PER_FETCH);
+    }
+
         // get next url from list
 
         // get webpage for url
