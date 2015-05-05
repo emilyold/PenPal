@@ -57,7 +57,7 @@ int main(int argc, char* argv[]){
 
     HashTable *ht;
     List *theList;
-    int currentDepth = 0;
+    //int currentDepth = 0;
     int docID = 1;
     char *fileName = malloc(sizeof(char)*50);
     char *depthString = malloc(sizeof(char)*5);
@@ -101,8 +101,8 @@ int main(int argc, char* argv[]){
 
     
     // setup seed page
-    seed->depth = currentDepth;
-    currentDepth++;
+    seed->depth = 0;
+    
 
     seed->url = malloc(sizeof(char*) * 1000);
     strcpy(seed->url, argv[1]);
@@ -136,18 +136,20 @@ int main(int argc, char* argv[]){
     char *result;
     char *baseUrl = seed->url;
 
-    if(currentDepth <= depth){
-        printf("here\n");
+    if(seed->depth < depth){
+        
         
         while( (pos = GetNextURL(seed->html, pos, baseUrl, &result)) > 0 ){
-            WebPage *pg = malloc(sizeof(WebPage));
-            pg->url = result;
-            pg->depth = currentDepth;
-            appendToList(theList, pg);
-            printf("added %s\n", pg->url);
-            printf("%d\n", pos);
+            if(lookUpURL(ht, result) == 0){
+                WebPage *pg = malloc(sizeof(WebPage));
+                pg->url = result;
+                pg->depth = seed->depth + 1;
+                addToHashTable(ht, pg->url);
+                appendToList(theList, pg);
+                printf("added %s\n", pg->url);
+                printf("%d\n", pos);
+            }    
         }
-        currentDepth++;
     }
 
     // while there are urls to crawl
@@ -155,15 +157,12 @@ int main(int argc, char* argv[]){
     while ( (node = pop(theList)) != NULL ){
         WebPage *pg = malloc(sizeof(WebPage));
         pg = node->page;
-        printf("%s %d %d\n", pg->url, pg->depth, currentDepth);
-        if(pg->depth > currentDepth){
-            currentDepth = pg->depth;
-        }
+        printf("%s %d %ld\n", pg->url, pg->depth, depth);
+        // if(pg->depth > currentDepth){
+        //     currentDepth = pg->depth;
+        // }
         
-        if ( (status = GetWebPage(pg)) == 0 ){
-            fprintf(stderr, "%s was not able to be processed.\n", argv[1]);
-        }
-        else{
+        if ( (status = GetWebPage(pg)) != 0 ){
             sprintf(fileName, "%s/%d", argv[2], docID);
             sprintf(depthString, "\n%d\n", pg->depth);
             docID++;
@@ -174,18 +173,23 @@ int main(int argc, char* argv[]){
             fputs(pg->html, fp);
             fclose(fp);
         }
-        
-        if( currentDepth <= depth ){
+
+        if( pg->depth < depth ){
             pos = 0;
+            baseUrl = pg->url;
             while( (pos = GetNextURL(pg->html, pos, baseUrl, &result)) > 0 ){
-                WebPage *pg = malloc(sizeof(WebPage));
-                pg->url = result;
-                pg->depth = currentDepth;
-                appendToList(theList, pg);
-            }
-            currentDepth++;
+                if(strncmp(URL_PREFIX, result, strlen(URL_PREFIX)) == 0 && lookUpURL(ht, result) == 0){
+                    WebPage *page = malloc(sizeof(WebPage));
+                    page->url = result;
+                    page->depth = pg->depth + 1;
+                    addToHashTable(ht, result);
+                    appendToList(theList, page);
+                       
+                }
+                      
+            }    
         }
-        sleep(INTERVAL_PER_FETCH);
+        sleep(.2);
     }
 
         // get next url from list
