@@ -65,10 +65,11 @@ void initializeHashTable(HashTable *ht){
  *      3. add the url to the hash table in a HashTableNode structure
  */
 void addToHashTable(HashTable *ht, const char *url){
-    unsigned long hashVal = JenkinsHash(url, 5);
+    unsigned long hashVal = JenkinsHash(url, MAX_HASH_SLOT);
     /* if nothing had been hashed to that index yet, create a new HashTableNode
      * and with the provided url in that spot */
     if ( ht->table[hashVal]->url == NULL ){
+        printf("good");
         ht->table[hashVal]->url = malloc(sizeof(char) * 1000);
         strcpy(ht->table[hashVal]->url, url);
     }
@@ -76,9 +77,11 @@ void addToHashTable(HashTable *ht, const char *url){
      * the list of nodes hashed there, and add a new one with the provided url 
      * at the end of the list */
     else{
+        printf("here");
         /* get ready to traverse, or insert */
-        ht->table[hashVal]->next = malloc(sizeof(HashTableNode));
-        HashTableNode *current = ht->table[hashVal]->next;
+        //ht->table[hashVal]->next = malloc(sizeof(HashTableNode));
+        HashTableNode *current = malloc(sizeof(HashTableNode));
+        current = ht->table[hashVal];
        
         /* traverse the list */
         while ( current->next != NULL ){
@@ -87,10 +90,10 @@ void addToHashTable(HashTable *ht, const char *url){
 
         /* insert the new node at the end of the list */
         current->next = malloc(sizeof(HashTableNode));
-        HashTableNode *new = current->next;
-        new->url = malloc(sizeof(char) * 1000);
-        strcpy(new->url, url);
-        new->next = NULL;       
+        HashTableNode *newNode = current->next;
+        newNode->url = malloc(sizeof(char) * 1000);
+        strcpy(newNode->url, url);
+        newNode->next = NULL;       
     }
 }
 
