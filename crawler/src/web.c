@@ -109,15 +109,17 @@ int GetWebPage(WebPage* page)
     // add a user agent just in case servers need it
     curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
 
+    curl_easy_setopt(curl_handle, CURLOPT_FAILONERROR, 1);
+
     /* Add any additional options here */
 
     // get the page
     res = curl_easy_perform(curl_handle);
 
-    // check response code
-    long respCode;
-    curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &respCode);
-    if(res != CURLE_OK || respCode == 404 ) {
+    // // check response code
+    // long respCode;
+    // curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &respCode);
+    if(res != CURLE_OK) {
         status = 0;
     }
 
@@ -344,6 +346,7 @@ int NormalizeURL(char *url) {
     if(tmp.fragment) {                       // fragment
         strcat(url, tmp.fragment);
     }
+    printf("%s", url);
 
 cleanup:                                     // cleanup memory
     if(tmp.scheme)
