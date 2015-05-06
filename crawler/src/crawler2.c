@@ -89,7 +89,7 @@ int main(int argc, char* argv[]){
 
     // make sure the url provided is within the http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/ domain
     if ( strncmp(URL_PREFIX, argv[1], strlen(URL_PREFIX)) != 0 ){
-        fprintf(stderr, "URL provided is not in the permitted domain. Please choose a URL with the prefix: %s", URL_PREFIX);
+        fprintf(stderr, "URL provided is not in the permitted domain. Please choose a URL with the prefix: %s\n", URL_PREFIX);
         exit(EXIT_FAILURE);
     }
     
@@ -118,7 +118,7 @@ int main(int argc, char* argv[]){
     //int normal;
     
     if ((status = GetWebPage(seed)) == 0 ){
-        fprintf(stderr, "%s was not able to be processed.", argv[1]);
+        fprintf(stderr, "%s was not able to be processed.\n", argv[1]);
     }
 
     // write seed file
@@ -146,13 +146,18 @@ int main(int argc, char* argv[]){
 
     if(seed->depth < depth){
         while( (pos = GetNextURL(seed->html, pos, baseUrl, &result)) > 0 ){
-            if(lookUpURL(ht, result) == 0 && NormalizeURL(result) != 0){
-                WebPage *pg = malloc(sizeof(WebPage));
-                pg->url = result;
-                pg->depth = seed->depth + 1;
-                addToHashTable(ht, pg->url);
-                appendToList(theList, pg);
-            }    
+            if(strncmp(URL_PREFIX, result, strlen(URL_PREFIX)) == 0){
+                if (NormalizeURL(result) != 0){
+                    if(lookUpURL(ht, result) == 0){
+                        WebPage *pg = malloc(sizeof(WebPage));
+                        pg->url = result;
+                        pg->depth = seed->depth + 1;
+                        addToHashTable(ht, pg->url);
+                        appendToList(theList, pg);
+                    }    
+                } 
+            }
+            
         }
     }
 
@@ -182,14 +187,10 @@ int main(int argc, char* argv[]){
             pos = 0;
             baseUrl = pg->url;
             while( (pos = GetNextURL(pg->html, pos, baseUrl, &result)) > 0 ){
-                // if(strcmp(result, "http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Programming_language.html") == 0){
-                //     printf("THIS IS IT\n");
-                // }
                 if(strncmp(URL_PREFIX, result, strlen(URL_PREFIX)) == 0){
                     // only add them to the list if they have not already been looked at
                     if ( NormalizeURL(result) != 0 ){
-                        if (lookUpURL(ht, result) == 0){
-                            //printf("not in hashtable\n");                     
+                        if (lookUpURL(ht, result) == 0){                    
                             WebPage *page = malloc(sizeof(WebPage));
                             page->url = result;
                             page->depth = pg->depth + 1;
@@ -197,11 +198,6 @@ int main(int argc, char* argv[]){
                             appendToList(theList, page);
                         }
                     }
-                    
-                    // else{
-                    //     printf("already in hashtable\n");
-                    // }
-                     
                 }          
             }   
         }
