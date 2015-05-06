@@ -1,0 +1,6 @@
+Crawler requires exactly 3 arguments
+Crawler requires exactly 3 arguments
+URL provided is not in the permitted domain. Please choose a URL with the prefix: http://old-www.cs.dartmouth.edu/~cs50/tse
+./baddir is not a valid directory.
+Depth 10 is too deep!
+The depth must be a single integer.
