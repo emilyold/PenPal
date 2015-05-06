@@ -109,9 +109,10 @@ int GetWebPage(WebPage* page)
     // add a user agent just in case servers need it
     curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
 
-    curl_easy_setopt(curl_handle, CURLOPT_FAILONERROR, 1);
+    
 
     /* Add any additional options here */
+    curl_easy_setopt(curl_handle, CURLOPT_FAILONERROR, 1);
 
     // get the page
     res = curl_easy_perform(curl_handle);
@@ -285,6 +286,8 @@ int NormalizeURL(char *url) {
         goto cleanup;                        // sorry Dijkstra
     }
 
+
+
     // check file extension
     if(tmp.path) {                           // have a path
         dot = strrchr(tmp.path, '.');
@@ -311,6 +314,9 @@ int NormalizeURL(char *url) {
         }
 
     }
+
+    // url=strchr(url,'#');
+    // if(url){ *url = '\0';}
 
     // clear url
     memset(url, '\0', strlen(url)-1);
@@ -346,7 +352,9 @@ int NormalizeURL(char *url) {
     if(tmp.fragment) {                       // fragment
         strcat(url, tmp.fragment);
     }
-    printf("%s", url);
+
+    char* cut;
+    if((cut = strchr(url,'#'))){ *cut = '\0';}
 
 cleanup:                                     // cleanup memory
     if(tmp.scheme)
