@@ -4,8 +4,8 @@
  * Project name: CS50 Tiny Search Engine
  * Component name: Crawler
  *
- * Author:
- * Date:
+ * Author: Emily Old
+ * Date: May 2015
  *
  * You should include in this file your functionality for the hashtable as
  * described in the assignment and lecture.
@@ -69,7 +69,7 @@ void addToHashTable(HashTable *ht, const char *url){
     /* if nothing had been hashed to that index yet, create a new HashTableNode
      * and with the provided url in that spot */
     if ( ht->table[hashVal]->url == NULL ){
-        printf("good");
+        //printf("\n%ld good", hashVal);
         ht->table[hashVal]->url = malloc(sizeof(char) * 1000);
         strcpy(ht->table[hashVal]->url, url);
     }
@@ -77,7 +77,7 @@ void addToHashTable(HashTable *ht, const char *url){
      * the list of nodes hashed there, and add a new one with the provided url 
      * at the end of the list */
     else{
-        printf("here");
+        //printf("\n%ld here", hashVal);
         /* get ready to traverse, or insert */
         //ht->table[hashVal]->next = malloc(sizeof(HashTableNode));
         HashTableNode *current = malloc(sizeof(HashTableNode));
@@ -112,7 +112,8 @@ int lookUpURL(HashTable *ht, const char *url){
     unsigned long hashVal = JenkinsHash(url, MAX_HASH_SLOT);
     /* if nothing has been hashed to that index, the url is not in the
      * table yet, so return 0 */
-    if ( ht->table[hashVal]->url == NULL ){
+    if ( ht->table[hashVal]->url == NULL && ht->table[hashVal]->next == NULL){
+        //printf("here");
         return 0;
     } 
 
