@@ -37,8 +37,16 @@
 /* ========================================================================== */
 
 /*
- * Given a pointer to a List struture, connect the list's
- * head and tail, and set their data equal to NULL;
+ * initializeList -- creates empy doubly linked list with two sentinels
+ *
+ * Assumptions:
+ * 		1. theList has been allocated
+ *
+ * Pseudocode:
+ * 		1. allocate memory for the head and tail
+ * 		2. set the head and tail data to NULL
+ * 		3. adjust head pointers
+ * 		4. adjust tail pointers
  */
 void initializeList(List *theList){
 	/* set each node's data to null */
@@ -62,8 +70,16 @@ void initializeList(List *theList){
 
 
 /*
- * Return the first element of the list if it exists.
- * Otherwise return null.
+ * pop -- remove and return the first element of a list
+ * 
+ * Assumptions:
+ * 		1. theList has been allocated
+ * 
+ * Pseudocode:
+ * 		1. check if the list is empty
+ *		2. if there is an element to be popped allocate memory 
+ * 		3. adjust pointers to remove the element
+ *		4. if it is empty return NULL;
  */
 ListNode *pop(List *theList){
 	/* check if there is anything in the list other than the head and tail */ 
@@ -86,13 +102,21 @@ ListNode *pop(List *theList){
 }
 
 /*
- * Add a list node to the end of the list
+ * appendToList -- add an element to the end of a list
+ *
+ * Assumptions:
+ * 		1. theList has been allocated
+ *
+ * Pseudocode:
+ * 		1. allocate memory for the new element
+ * 		2. adjust pointers at the end of the list 
  */
 void appendToList(List *theList, void *page){
 	
 	ListNode *node = malloc(sizeof(ListNode));
 	node->page = page;
 
+	/* insert the new listNode directly before the tail */
 	node->prev = theList->tail->prev;
 	theList->tail->prev->next = node;
 	node->next = theList->tail;
