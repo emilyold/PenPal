@@ -54,6 +54,7 @@ int main(int argc, char* argv[]){
     struct stat path;
     long depth;
     char *ptr;
+    
 
     HashTable *ht;
     List *theList;
@@ -68,21 +69,25 @@ int main(int argc, char* argv[]){
         exit(EXIT_FAILURE);
     }
     
+    // make sure the directory provided is valid
     if (stat(argv[2], &path) < 0){
         fprintf(stderr, "%s is not a valid directory.\n", argv[2]);
         exit(EXIT_FAILURE);
     }
     
+    // make sure the depth provided is a valid number
     depth = strtol(argv[3], &ptr, 10);
     if( strlen(ptr) != 0){
         fprintf(stderr, "The depth must be a single integer.\n");
         exit(EXIT_FAILURE);
     }
+    // and make sure the depth is in range
     else if (depth > MAX_DEPTH){
         fprintf(stderr, "Depth %s is too deep!\n", argv[3]);
         exit(EXIT_FAILURE);
     }
 
+    // make sure the url provided is within the http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/ domain
     if ( strncmp(URL_PREFIX, argv[1], strlen(URL_PREFIX)) != 0 ){
         fprintf(stderr, "URL provided is not in the permitted domain. Please choose a URL with the prefix: %s", URL_PREFIX);
         exit(EXIT_FAILURE);
@@ -105,12 +110,14 @@ int main(int argc, char* argv[]){
     
 
     seed->url = malloc(sizeof(char*) * 1000);
+
     strcpy(seed->url, argv[1]);
 
     // get seed webpage
     int status;
+    //int normal;
     
-    if ( (status = GetWebPage(seed)) == 0 ){
+    if ((status = GetWebPage(seed)) == 0 ){
         fprintf(stderr, "%s was not able to be processed.", argv[1]);
     }
 
@@ -125,7 +132,8 @@ int main(int argc, char* argv[]){
         fputs(seed->html, fp);
         fclose(fp);
     }
-
+    
+    
     // add seed page to hashtable
     if(lookUpURL(ht, seed->url) == 0){
         addToHashTable(ht, seed->url);
@@ -137,17 +145,13 @@ int main(int argc, char* argv[]){
     char *baseUrl = seed->url;
 
     if(seed->depth < depth){
-        
-        
         while( (pos = GetNextURL(seed->html, pos, baseUrl, &result)) > 0 ){
-            if(lookUpURL(ht, result) == 0){
+            if(lookUpURL(ht, result) == 0 && NormalizeURL(result) != 0){
                 WebPage *pg = malloc(sizeof(WebPage));
                 pg->url = result;
                 pg->depth = seed->depth + 1;
                 addToHashTable(ht, pg->url);
                 appendToList(theList, pg);
-                printf("added %s\n", pg->url);
-                printf("%d\n", pos);
             }    
         }
     }
@@ -157,11 +161,9 @@ int main(int argc, char* argv[]){
     while ( (node = pop(theList)) != NULL ){
         WebPage *pg = malloc(sizeof(WebPage));
         pg = node->page;
-        printf("%s %d %ld\n", pg->url, pg->depth, depth);
-        // if(pg->depth > currentDepth){
-        //     currentDepth = pg->depth;
-        // }
+        printf("%s %d %ld \n", pg->url, pg->depth, depth);
         
+        // if the webpage is valid, write it to a file 
         if ( (status = GetWebPage(pg)) != 0 ){
             sprintf(fileName, "%s/%d", argv[2], docID);
             sprintf(depthString, "\n%d\n", pg->depth);
@@ -174,34 +176,38 @@ int main(int argc, char* argv[]){
             fclose(fp);
         }
 
+        // if there is still more crawling to do...
         if( pg->depth < depth ){
+            // extract urls from the current html and add them to the list
             pos = 0;
             baseUrl = pg->url;
             while( (pos = GetNextURL(pg->html, pos, baseUrl, &result)) > 0 ){
-                if(strncmp(URL_PREFIX, result, strlen(URL_PREFIX)) == 0 && lookUpURL(ht, result) == 0){
-                    WebPage *page = malloc(sizeof(WebPage));
-                    page->url = result;
-                    page->depth = pg->depth + 1;
-                    addToHashTable(ht, result);
-                    appendToList(theList, page);
-                       
-                }
-                      
-            }    
+                // if(strcmp(result, "http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Programming_language.html") == 0){
+                //     printf("THIS IS IT\n");
+                // }
+                if(strncmp(URL_PREFIX, result, strlen(URL_PREFIX)) == 0){
+                    // only add them to the list if they have not already been looked at
+                    if ( NormalizeURL(result) != 0 ){
+                        if (lookUpURL(ht, result) == 0){
+                            //printf("not in hashtable\n");                     
+                            WebPage *page = malloc(sizeof(WebPage));
+                            page->url = result;
+                            page->depth = pg->depth + 1;
+                            addToHashTable(ht, page->url);
+                            appendToList(theList, page);
+                        }
+                    }
+                    
+                    // else{
+                    //     printf("already in hashtable\n");
+                    // }
+                     
+                }          
+            }   
         }
-        sleep(.2);
+        sleep(.1);
     }
-
-        // get next url from list
-
-        // get webpage for url
-
-        // write page file
-
-        // extract urls from webpage
-
-    //sleep(INTERVAL_PER_FETCH);
-
+    //printf("%d", lookUpURL(ht, "http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Computer_science.html"));
     // cleanup curl
     curl_global_cleanup();
 
