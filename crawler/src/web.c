@@ -353,8 +353,8 @@ int NormalizeURL(char *url) {
         strcat(url, tmp.fragment);
     }
 
-    // char* cut;
-    // if((cut = strchr(url,'#'))){ *cut = '\0';}
+    char* cut;
+    if((cut = strchr(url,'#'))){ *cut = '\0';}
 
 cleanup:                                     // cleanup memory
     if(tmp.scheme)
