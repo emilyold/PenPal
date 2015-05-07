@@ -11,7 +11,7 @@ third argument — The crawler depth. Depth 1 will write a file for just the see
 
 
 OUTPUTS:
-The url currently being crawled and all of the urls found from the current url will be printed to standard out. The html of all of the urls found with the prefix http://old-www.cs.dartmouth.edu/~cs50/tse/ will be written to a file in the directory specified by the user. These files will be numbered according to the order the urls were processed. The first line of the file is the url, the second line is the depth it was found at, and the rest of the file is the html. If multiple urls produce the same html, only one file will be written with the html. 
+The url currently being crawled will be printed to standard out. The html of all of the urls found with the prefix http://old-www.cs.dartmouth.edu/~cs50/tse/ will be written to a file in the directory specified by the user. These files will be numbered according to the order the urls were processed. The first line of the file is the url, the second line is the depth it was found at, and the rest of the file is the html. If multiple urls produce the same html, only one file will be written with the html. 
 
 
 System Libraries:
@@ -48,8 +48,7 @@ Other considerations:
 
 3. There are currently memory leaks in the code.
 
-4. The crawlerTest.sh script runs multiple tests on a compiled crawler file. The output of a test file  redirected to a log file: crawlerTestlog.‘date +"%a_%b_%d_%T_%Y"‘
-
+4. The crawlerTest.sh script runs multiple tests on a compiled crawler file. The output of a test file  redirected to a log file: crawlerTestlog.‘date +"%a_%b_%d_%T_%Y"‘ This test script uses ./testdir as a valid directory and ./baddir as an invalid directory because I use ./testdir as the directory to where I wrote the output files. If it is run in a directory where ./testdir does not exist, the output may be different from that in my log.
 
 
 
