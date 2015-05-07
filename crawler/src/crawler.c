@@ -4,15 +4,14 @@
  * Author: Emily Old
  * Date: April 2015
  *
- * Input:
+ * Input: a url to be crawled, a valid directory, and a depth
  *
- * Command line options:
+ * Command line options: None
  *
- * Output:
+ * Output: The url being crawled to standard out. Files containing each url's html
+ * in the provided directory. 
  *
- * Error Conditions:
- *
- * Special Considerations:
+ * Special Considerations: Memory leaks exist
  *
  */
 /* ========================================================================== */
