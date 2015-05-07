@@ -7,22 +7,15 @@ OBJS = crawler2.o web.o hashtable.o list.o
 SRCS = crawler2.c web.c hashtable.c list.c common.h utils.h list.h hashtable.h web.h
 
 
-$(EXEC): $(OBJS) $(UTILLIB)
-	$(CC) $(CFLAGS) $(LFLAGS) -o $(EXEC) $(OBJS) $(UTILFLAG)
+$(EXEC): $(OBJS) 
+	$(CC) $(CFLAGS) $(LFLAGS) -o $(EXEC) $(OBJS) 
 
 $(OBJS): $(SRCS)
 	$(CC) $(CFLAGS) $(LFLAGS) -c $(SRCS)
 
 debug: $(SRCS)
 	$(CC) $(CFLAGS) -g -ggdb -c $(SRCS)
-	$(CC) $(CFLAGS) -g -ggdb -o $(EXEC) $(OBJS) $(UTILFLAG)
-
-$(UTILLIB): $(UTILC) $(UTILH)
-	cd $(UTILDIR); make
+	$(CC) $(CFLAGS) -g -ggdb -o $(EXEC) $(OBJS)
 
 clean:
-	rm -f *~
-	rm -f *#
-	rm -f ./myApp
-	rm -f *.o
-	cd $(UTILDIR); make clean 
+	rm -f *.o 

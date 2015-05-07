@@ -15,7 +15,7 @@
 #include "common.h"                          // common functionality
 
 // ---------------- Constants
-#define MAX_HASH_SLOT 10000                  // number of "buckets"
+#define MAX_HASH_SLOT 1000                  // number of "buckets"
 
 // ---------------- Structures/Types
 
@@ -43,10 +43,29 @@ typedef struct HashTable {
  */
 unsigned long JenkinsHash(const char *str, unsigned long mod);
 
+/*
+* initializeHashTable
+* @ht: HashTable struct that has been allocated
+* 
+* Returns void
+*/
 void initializeHashTable(HashTable *ht);
 
+/*
+ * addToHashTable
+ * @ht: HashTable struct that has been allocated
+ * @url: char buffer to be hashed
+ *
+ * Returns void
+ */
 void addToHashTable(HashTable *ht, const char *url);
 
+/*
+ * @ht: HashTable struct that has been allocated
+ * @url: char buffer that needs to be looked up
+ *
+ * returns voide
+ */
 int lookUpURL(HashTable *ht, const char *url);
 
 #endif // HASHTABLE_H

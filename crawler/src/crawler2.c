@@ -65,31 +65,31 @@ int main(int argc, char* argv[]){
    
     //check command line arguments
     if (argc != 4){
-        fprintf(stderr, "Crawler requires exactly 3 arguments\n");
+        printf("Crawler requires exactly 3 arguments\n");
         exit(EXIT_FAILURE);
     }
     
     // make sure the directory provided is valid
     if (stat(argv[2], &path) < 0){
-        fprintf(stderr, "%s is not a valid directory.\n", argv[2]);
+        printf("%s is not a valid directory.\n", argv[2]);
         exit(EXIT_FAILURE);
     }
     
     // make sure the depth provided is a valid number
     depth = strtol(argv[3], &ptr, 10);
     if( strlen(ptr) != 0){
-        fprintf(stderr, "The depth must be a single integer.\n");
+        printf("The depth must be a single integer.\n");
         exit(EXIT_FAILURE);
     }
     // and make sure the depth is in range
     else if (depth > MAX_DEPTH){
-        fprintf(stderr, "Depth %s is too deep!\n", argv[3]);
+        printf("Depth %s is too deep!\n", argv[3]);
         exit(EXIT_FAILURE);
     }
 
     // make sure the url provided is within the http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/ domain
     if ( strncmp(URL_PREFIX, argv[1], strlen(URL_PREFIX)) != 0 ){
-        fprintf(stderr, "URL provided is not in the permitted domain. Please choose a URL with the prefix: %s\n", URL_PREFIX);
+        printf("URL provided is not in the permitted domain. Please choose a URL with the prefix: %s\n", URL_PREFIX);
         exit(EXIT_FAILURE);
     }
     
@@ -118,7 +118,7 @@ int main(int argc, char* argv[]){
     //int normal;
     
     if ((status = GetWebPage(seed)) == 0 ){
-        fprintf(stderr, "%s was not able to be processed.\n", argv[1]);
+        printf("%s was not able to be processed.\n", argv[1]);
     }
 
     // write seed file
@@ -145,6 +145,7 @@ int main(int argc, char* argv[]){
     char *baseUrl = seed->url;
 
     if(seed->depth < depth){
+        printf("[crawler]: Crawling - %s\n", seed->url);
         while( (pos = GetNextURL(seed->html, pos, baseUrl, &result)) > 0 ){
             if(strncmp(URL_PREFIX, result, strlen(URL_PREFIX)) == 0){
                 if (NormalizeURL(result) != 0){
@@ -166,8 +167,7 @@ int main(int argc, char* argv[]){
     while ( (node = pop(theList)) != NULL ){
         WebPage *pg = malloc(sizeof(WebPage));
         pg = node->page;
-        printf("%s %d %ld \n", pg->url, pg->depth, depth);
-        
+
         // if the webpage is valid, write it to a file 
         if ( (status = GetWebPage(pg)) != 0 ){
             sprintf(fileName, "%s/%d", argv[2], docID);
@@ -183,6 +183,7 @@ int main(int argc, char* argv[]){
 
         // if there is still more crawling to do...
         if( pg->depth < depth ){
+            printf("[crawler]: Crawling - %s\n", pg->url);
             // extract urls from the current html and add them to the list
             pos = 0;
             baseUrl = pg->url;
@@ -203,7 +204,7 @@ int main(int argc, char* argv[]){
         }
         sleep(.1);
     }
-    //printf("%d", lookUpURL(ht, "http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Computer_science.html"));
+   
     // cleanup curl
     curl_global_cleanup();
 

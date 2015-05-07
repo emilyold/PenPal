@@ -2,6 +2,7 @@
 moreThan3=`./crawler http://old-www.cs.dartmouth.edu/~cs50/tse/ ./testdir 0 extra`
 echo $moreThan3
 
+
 #check what happens if less than 3 arguments are given
 lessThan3=`./crawler http://old-www.cs.dartmouth.edu/~cs50/tse/`
 echo $lessThan3

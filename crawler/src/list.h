@@ -33,10 +33,29 @@ typedef struct List {
 
 // ---------------- Prototypes/Macros
 
+/*
+ * initializeList
+ * @theList: List structure that has been allocated
+ *
+ * Returns void
+ */
 void initializeList(List *theList);
 
+/*
+ * pop -- removes first element in a list
+ * @theList: List structure that has been allocated
+ * 
+ * Returns pointer to the listNode structure that was popped
+ */
 ListNode *pop(List *theList);
 
+/*
+ * appendToList -- adds an element to the end of a list 
+ * @theList: List structure that has been allocated
+ * @page: element to be appended
+ *
+ * Returns void
+ */
 void appendToList(List *theList, void *page);
 
 #endif // LIST_H
