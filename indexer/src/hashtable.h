@@ -12,7 +12,6 @@
 #define HASHTABLE_H
 
 // ---------------- Prerequisites e.g., Requires "math.h"
-#include "common.h"                          // common functionality
 
 // ---------------- Constants
 #define MAX_HASH_SLOT 1000                  // number of "buckets"
@@ -20,7 +19,7 @@
 // ---------------- Structures/Types
 
 typedef struct HashTableNode {
-    char *url;                               // url previously seen
+    void *data;                               // url previously seen
     struct HashTableNode *next;              // pointer to next node
 } HashTableNode;
 
@@ -54,18 +53,21 @@ void initializeHashTable(HashTable *ht);
 /*
  * addToHashTable
  * @ht: HashTable struct that has been allocated
- * @url: char buffer to be hashed
+ * @data: data to be stored in the hash table
+ * @hashKey: char buffer that determines where the data is hashed to
  *
  * Returns void
  */
-void addToHashTable(HashTable *ht, const char *url);
+void addToHashTable(HashTable *ht, void *data, const char *hashKey);
 
 /*
  * @ht: HashTable struct that has been allocated
- * @url: char buffer that needs to be looked up
+ * @hashKey: char buffer that needs to be looked up
  *
- * returns voide
+ * Returns NULL if nothing is hashed to the corresponding spot
+ * Otherwise returns the HashTableNode that is hashed to that spot
  */
-int lookUpURL(HashTable *ht, const char *url);
+HashTableNode *lookUp(HashTable *ht, const char *hashKey);
+
 
 #endif // HASHTABLE_H

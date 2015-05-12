@@ -19,7 +19,7 @@
 // ---------------- Structures/Types
 
 typedef struct ListNode {
-    void *page;                           // the data for a given page
+    void *data;                           // the data for a given page
     struct ListNode *prev;                   // pointer to previous node
     struct ListNode *next;                   // pointer to next node
 } ListNode;
@@ -56,6 +56,6 @@ ListNode *pop(List *theList);
  *
  * Returns void
  */
-void appendToList(List *theList, void *page);
+void appendToList(List *theList, void *data);
 
 #endif // LIST_H
