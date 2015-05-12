@@ -1,17 +1,19 @@
 /* ========================================================================== */
-/* File: crawler.c - Tiny Search Engine web crawler
+/* File: indexer.c - Tiny Search Engine indexer
  *
  * Author: Emily Old
- * Date: April 2015
+ * Date: May 2015
  *
- * Input: a url to be crawled, a valid directory, and a depth
+ * Input without testing: [TARGET_DIRECTORY] [RESULTS FILENAME]
+ * Input with testing: [TARGET_DIRECTORY] [RESULTS FILENAME] [RESULTS FILENAME] [REWRITTEN FILENAME]
  *
  * Command line options: None
  *
- * Output: The url being crawled to standard out. Files containing each url's html
- * in the provided directory. 
+ * Output without testing: The results file is updated with each line in the format:
+ *						   [word] [# of documents containing the word] [doc ID] [freqency in doc]... 
  *
- * Special Considerations: Memory leaks exist
+ * Special Considerations: Assumes the files and directory provided already exist.
+ *						   Assumes the files in the directory are named with unique integers
  *
  */
 /* ========================================================================== */
@@ -26,14 +28,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 // ---------------- Local includes  e.g., "file.h"
-#include "web.h"  
-#include "../../crawler/src/hashtable.h"  
-#include "file.h"                         // curl and html functionality
-                           // webpage list functionality
-                     // hashtable functionality
+#include "web.h"  						  // webpage functionality
+#include "../../crawler/src/hashtable.h"  // hashtable functionality
+#include "file.h"                         // checking file functionality
 
 // ---------------- Constant definitions
-#define LINE_LENGTH 250;
 
 // ---------------- Macro definitions
 
@@ -73,7 +72,7 @@ char *LoadDocument(char *fileName){
 
     fseek(fp, 0, SEEK_END);
     int len = ftell(fp);
-    char *html = malloc(sizeof(char)*len);
+    char *html = malloc(sizeof(char)*len + 1);
     fseek(fp, 0, SEEK_SET);
     while ( fgets(line, BUFSIZ, fp) != NULL){
 		if (lineNum > 2){
@@ -83,8 +82,44 @@ char *LoadDocument(char *fileName){
 	}
 
     fclose(fp);
+    
     return html;
 }
+
+static int UpdateDocList(WordNode *word, int documentId){
+	DocumentNode *currentDoc = word->page;
+
+	if(currentDoc->doc_id == documentId){
+		currentDoc->freq++;
+		return 1;
+	}
+	else{
+		while(currentDoc->next != NULL){
+			if (currentDoc->doc_id == documentId){
+				currentDoc->freq++;
+				return 1;
+			}
+			else{
+				currentDoc = currentDoc->next;
+			}
+					
+		}
+		if(currentDoc->doc_id == documentId){
+			currentDoc->freq++;
+			return 1;
+		}
+		else{
+			currentDoc->next = malloc(sizeof(DocumentNode));
+			DocumentNode *newDoc = currentDoc->next;
+			newDoc->doc_id = documentId;
+			newDoc->freq = 1;
+			newDoc->next = NULL;
+			return 1;
+		}
+	}
+	return 0;	
+}
+
 
 int UpdateIndex(char *word, int documentId, HashTable *index){
 	if (lookUp(index, word) == NULL){
@@ -104,73 +139,13 @@ int UpdateIndex(char *word, int documentId, HashTable *index){
 		HashTableNode *htnode = lookUp(index, word);
 		WordNode *currentWord = htnode->data;
 		if(strcmp(currentWord->word, word) == 0){
-			DocumentNode *currentDoc = currentWord->page;
-
-			if(currentDoc->doc_id == documentId){
-				currentDoc->freq++;
-				return 1;
-			}
-
-			else{
-				while(currentDoc->next != NULL){
-					if (currentDoc->doc_id == documentId){
-						currentDoc->freq++;
-						return 1;
-					}
-					else{
-						currentDoc = currentDoc->next;
-					}
-					
-				}
-				if(currentDoc->doc_id == documentId){
-					currentDoc->freq++;
-					return 1;
-				}
-				else{
-					currentDoc->next = malloc(sizeof(DocumentNode));
-					DocumentNode *newDoc = currentDoc->next;
-					newDoc->doc_id = documentId;
-					newDoc->freq = 1;
-					newDoc->next = NULL;
-					return 1;
-				}
-			}	
+			return UpdateDocList(currentWord, documentId);
 		}
 
 		else{
 			while(currentWord->next != NULL){
 				if(strcmp(currentWord->word, word) == 0){
-					DocumentNode *currentDoc = currentWord->page;
-
-					if (currentDoc->doc_id == documentId){
-						currentDoc->freq++;
-						return 1;
-					}
-
-					else{
-						while(currentDoc->next != NULL){
-							if (currentDoc->doc_id == documentId){
-								currentDoc->freq++;
-								return 1;
-							}
-							else{
-								currentDoc = currentDoc->next;
-							}	
-						}
-						if(currentDoc->doc_id == documentId){
-							currentDoc->freq++;
-							return 1;
-						}
-						else{
-							currentDoc->next = malloc(sizeof(DocumentNode));
-							DocumentNode *newDoc = currentDoc->next;
-							newDoc->doc_id = documentId;
-							newDoc->freq = 1;
-							newDoc->next = NULL;
-							return 1;
-						}
-					}
-					
+					return UpdateDocList(currentWord, documentId);
 				}
 				else{
 					currentWord = currentWord->next;
@@ -179,36 +154,7 @@ int UpdateIndex(char *word, int documentId, HashTable *index){
 			}
 			
 			if(strcmp(currentWord->word, word) == 0){
-				DocumentNode *currentDoc = currentWord->page;
-
-				if (currentDoc->doc_id == documentId){
-					currentDoc->freq++;
-					return 1;
-				}
-
-				else{
-					while(currentDoc->next != NULL){
-						if (currentDoc->doc_id == documentId){
-							currentDoc->freq++;
-							return 1;
-						}
-						else{
-							currentDoc = currentDoc->next;
-						}	
-					}
-					if(currentDoc->doc_id == documentId){
-						currentDoc->freq++;
-						return 1;
-					}
-					else{
-						currentDoc->next = malloc(sizeof(DocumentNode));
-						DocumentNode *newDoc = currentDoc->next;
-						newDoc->doc_id = documentId;
-						newDoc->freq = 1;
-						newDoc->next = NULL;
-						return 1;
-					}
-				}
+				UpdateDocList(currentWord, documentId);
 			}	
 			else{
 				currentWord->next= malloc(sizeof(WordNode));
@@ -302,7 +248,6 @@ int SaveIndexToFile(HashTable *index, char *filePath){
 						fputs(genString, fp);
 						currentDoc = currentDoc->next;
 					}
-
 					currentWord = currentWord->next;
 				}
 			}
@@ -311,6 +256,56 @@ int SaveIndexToFile(HashTable *index, char *filePath){
 	
 	fclose(fp);
 	return status;
+}
+
+HashTable *ReadFile(char *file){
+	HashTable *ht;
+	char line[BUFSIZ];
+	const char delim[2] = " ";
+	char *word;
+	long int docID;
+	long int freq;
+	FILE *fp;
+	char *token;
+	fp = fopen(file, "r");
+
+
+	if(fp == NULL){
+		printf("Error opening file: %s", file);
+		exit(EXIT_FAILURE);
+	}
+	else{
+		ht = malloc(sizeof(HashTable));
+		initializeHashTable(ht);
+		int counter;
+		char *ptr;
+		while (fgets(line, BUFSIZ, fp) != NULL){
+			token = strtok(line, delim);
+			word = token;
+			counter = 1;
+			while( token != NULL){
+				if (counter == 1 || counter == 2){
+					counter++;
+				}
+				else if (counter > 2 && (counter % 2) == 1){
+					docID = strtol(token, &ptr, 10);
+					counter ++;
+				}
+				else if( counter > 2 && (counter % 2) == 0){
+					freq = strtol(token, &ptr, 10);
+					long int i = 1;
+					while(i<=freq){
+						UpdateIndex(word, (int)docID, ht);
+						i++;
+					}
+					counter++;
+				}
+				token = strtok(NULL, delim);
+			}
+		}
+	}
+	fclose(fp);
+	return ht;
 }
 
 int main(int argc, char *argv[]){
@@ -333,18 +328,18 @@ int main(int argc, char *argv[]){
 		exit(EXIT_FAILURE);
 	}
 
-	if ( !IsFile(argv[2]) ){
-		printf("%s is not a valid file.", argv[2]);
+	if ( IsFile(argv[2]) ){
+		printf("The file %s already exists. Don't overwrite it.", argv[2]);
 		exit(EXIT_FAILURE);
 	}
 
-	if ( argc == 5 && !IsFile(argv[3]) ){
-		printf("%s is not a valid file.", argv[3]);
+	if ( argc == 5 && IsFile(argv[3]) ){
+		printf("The file %s already exists. Don't overwrite it.", argv[3]);
 		exit(EXIT_FAILURE);
 	}
 
-	if ( argc == 5 && !IsFile(argv[4]) ){
-		printf("%s is not a valid file.", argv[4]);
+	if ( argc == 5 && IsFile(argv[4]) ){
+		printf("The file %s already exists. Don't overwrite it.", argv[4]);
 		exit(EXIT_FAILURE);
 	}
 
@@ -356,12 +351,14 @@ int main(int argc, char *argv[]){
 		exit(EXIT_FAILURE);
 	}
 
-	printf("%s", *filenames);
 	for (i = 0; i < numFiles; i++){
-		sprintf(fileName, "%s/%s", argv[1], filenames[i]);
-		
-		printf("%s\n", fileName);
-
+		int length = strlen(argv[1]);
+		if(strcmp(&argv[1][length-1], "/") != 0){
+			sprintf(fileName, "%s/%s", argv[1], filenames[i]);
+		}
+		else{
+			sprintf(fileName, "%s%s", argv[1], filenames[i]);
+		}
 		doc = LoadDocument(fileName);
 		docID = (int)GetDocumentId(filenames[i]);
 		free(filenames[i]);
@@ -369,7 +366,6 @@ int main(int argc, char *argv[]){
 		pos = 0;
 		while ((pos = GetNextWord(doc, pos, &word)) > 0){
 			NormalizeWord(word);
-			printf("%s\n", word);
 			UpdateIndex(word, docID, Index);
 			free(word);
 		}
@@ -377,11 +373,18 @@ int main(int argc, char *argv[]){
 	}
 
 	SaveIndexToFile(Index, argv[2]);
-
 	free(filenames);
 	free(fileName);
 	FreeIndex(Index);
 	free(Index);
+
+	if(argc == 5){
+		HashTable *newht = ReadFile(argv[3]);
+		SaveIndexToFile(newht, argv[4]);
+		FreeIndex(newht);
+		free(newht);
+	}
+
 	return 1;
 }
 
