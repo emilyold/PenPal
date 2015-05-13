@@ -26,6 +26,7 @@
 // #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 // ---------------- Local includes  e.g., "file.h"
 #include "web.h"  						  // webpage functionality
 #include "hashtable.h"  // hashtable functionality
@@ -345,8 +346,9 @@ int SaveIndexToFile(HashTable *index, char *filePath){
 HashTable *ReadFile(char *file){
 	HashTable *ht; // new index
 	char line[BUFSIZ]; // where each line of the file will be stored
-	const char delim[2] = " "; // delimiter used to parse each line of the file
+	const char delim[2] = " \n"; // delimiter used to parse each line of the file
 	char *word; // pointer to current word being read of the file
+	long int docCount;
 	long int docID; // current document ID being looked at
 	long int freq; // current frequency of the word in the current document
 	FILE *fp; // pointer to file stream being read
@@ -372,32 +374,70 @@ HashTable *ReadFile(char *file){
 			/* parse the current line and store the word as the first token */
 			token = strtok(line, delim);
 			word = token;
+			int i;
+			for(i=0; i < strlen(word); i++){
+				if (!isalpha(word[i])){
+					printf("%s is not formatted correctly. Every line must begin with a word", file);
+					exit(EXIT_FAILURE);
+				}
+			}
 			counter = 1;
 
 			/* look at each token of the line in order */
 			while( token != NULL){
-				/* ignore the word and the number of documents it is found in */
-				if (counter == 1 || counter == 2){
-					counter++;
+				printf("counter: %d, token: %s\n", counter, token);
+
+				/* get the doc count of the current word */
+				if (counter == 2){
+					docCount = strtol(token, &ptr, 10);
+					/* make sure it is an integer */
+					if(strlen(ptr) != 0 && strcmp(ptr, "\n") != 0){
+						printf("%s is not formatted correctly. Every character after the word must be an integer.", file);
+						exit(EXIT_FAILURE);
+					}
 				}
 
 				/* if the token is in the position of a document ID, store it */
 				else if (counter > 2 && (counter % 2) == 1){
 					docID = strtol(token, &ptr, 10);
-					counter ++;
+					/* make sure it is an integer */
+					if(strlen(ptr) != 0 && strcmp(ptr, "\n") != 0){
+						printf("%s is not formatted correctly. Every character after the word must be an integer.", file);
+						exit(EXIT_FAILURE);
+					}
 				}
 
 				/* if the token is in the position of a frequency, store it and update the index */
 				else if( counter > 2 && (counter % 2) == 0){
 					freq = strtol(token, &ptr, 10);
+					/* make sure it is an integer */
+					if(strlen(ptr) != 0 && strcmp(ptr, "\n") != 0){
+						printf("%s is not formatted correctly. Every character int a line after the word must be an integer", file);
+						exit(EXIT_FAILURE);
+					}
+
+					/* update the index for the current word, document Id, and frequency */
 					long int i = 1;
 					while(i<=freq){
 						UpdateIndex(word, (int)docID, ht);
 						i++;
 					}
-					counter++;
 				}
+				counter++;
 				token = strtok(NULL, delim);
+			}
+			/* make sure the file is formatted correctly thus far */
+			if ((counter % 2) == 0){
+				printf("%s is not formatted correctly. Every line should have an even number of tokens.", file);
+				exit(EXIT_FAILURE);
+			}	
+			else if (counter == 3){
+				printf("%s is not formatted correctly. Every line should include at least one docID-freq pair.", file);
+				exit(EXIT_FAILURE);
+			}
+			else if((counter - 3)/2 != docCount){
+				printf("%s is not formatted correctly. Each word should have the same number of docID-freq pairs as there are documents.", file);
+				exit(EXIT_FAILURE);
 			}
 		}
 	}
@@ -430,11 +470,6 @@ int main(int argc, char *argv[]){
 		exit(EXIT_FAILURE);
 	}
 
-	if ( argc == 5 && IsFile(argv[3]) ){
-		printf("The file %s already exists. Don't overwrite it.\n", argv[3]);
-		exit(EXIT_FAILURE);
-	}
-
 	if ( argc == 5 && IsFile(argv[4]) ){
 		printf("The file %s already exists. Don't overwrite it.\n", argv[4]);
 		exit(EXIT_FAILURE);
@@ -442,11 +477,6 @@ int main(int argc, char *argv[]){
 
 	if (argc == 5 && strcmp(argv[2], argv[4]) == 0){
 		printf("The results file and the rewritten file cannot be the same.\n");
-		exit(EXIT_FAILURE);
-	}
-
-	if (argc == 5 && strcmp(argv[2], argv[3]) != 0){
-		printf("The second and third argument should be the same file for proper testing.\n");
 		exit(EXIT_FAILURE);
 	}
 
