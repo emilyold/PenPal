@@ -68,4 +68,6 @@ void addToHashTable(HashTable *ht, const char *url);
  */
 int lookUpURL(HashTable *ht, const char *url);
 
+void freeHashTable(HashTable *ht);
+
 #endif // HASHTABLE_H

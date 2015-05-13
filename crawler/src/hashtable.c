@@ -138,6 +138,21 @@ int lookUpURL(HashTable *ht, const char *url){
     return 0;
 }
 
+void freeHashTable(HashTable *ht){
+    int i;
+    for (i=0; i<MAX_HASH_SLOT; i++){
+        HashTableNode *curr = ht->table[i];
+        HashTableNode *tmp;
+        while(curr != NULL){
+            free(curr->url);
+            tmp = curr->next;
+            free(curr);
+            curr = tmp;
+
+        }
+    }
+}
+
 unsigned long JenkinsHash(const char *str, unsigned long mod)
 {
     size_t len = strlen(str);

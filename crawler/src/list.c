@@ -55,8 +55,8 @@ void initializeList(List *theList){
 
 	theList->head = head;
 	theList->tail = tail;
-	theList->head->data = NULL;
-	theList->tail->data = NULL;
+	theList->head->page = NULL;
+	theList->tail->page = NULL;
 
 	/* deal with the head */
 	theList->head->prev = NULL;
@@ -85,14 +85,14 @@ ListNode *pop(List *theList){
 	/* check if there is anything in the list other than the head and tail */ 
 	if(theList->head->next != theList->tail){
 		/* get the first listnode */
-		ListNode *popped = malloc(sizeof(ListNode));
-		popped = theList->head->next;
+		ListNode *popped = theList->head->next;
 
 		/* adjust pointers */
 		theList->head->next = popped->next;
 		popped->next->prev = theList->head;
-		
-		/* free memory and return */
+		// free(popped->next);
+		// free(popped->prev);
+
 		return popped;
 	}
 	else{
@@ -110,10 +110,10 @@ ListNode *pop(List *theList){
  * 		1. allocate memory for the new element
  * 		2. adjust pointers at the end of the list 
  */
-void appendToList(List *theList, void *data){
+void appendToList(List *theList, void *page){
 	
 	ListNode *node = malloc(sizeof(ListNode));
-	node->data = data;
+	node->page = page;
 
 	/* insert the new listNode directly before the tail */
 	node->prev = theList->tail->prev;

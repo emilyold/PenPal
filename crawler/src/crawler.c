@@ -134,7 +134,7 @@ int main(int argc, char* argv[]){
     
     
     // add seed page to hashtable
-    if(lookUp(ht, seed->url) == 0){
+    if(lookUpURL(ht, seed->url) == 0){
         addToHashTable(ht, seed->url);
     }
         
@@ -148,27 +148,27 @@ int main(int argc, char* argv[]){
         while( (pos = GetNextURL(seed->html, pos, baseUrl, &result)) > 0 ){
             if(strncmp(URL_PREFIX, result, strlen(URL_PREFIX)) == 0){
                 if (NormalizeURL(result) != 0){
-                    if(lookUp(ht, result) == 0){
+                    if(lookUpURL(ht, result) == 0){
                         WebPage *pg = malloc(sizeof(WebPage));
                         pg->url = result;
                         pg->depth = seed->depth + 1;
                         addToHashTable(ht, pg->url);
                         appendToList(theList, pg);
-                        //free(pg);
                     }    
                 } 
-            }  
+            }
+            
         }
-        free(seed->url);
-        free(seed->html);
-        free(seed);
     }
+    free(seed->html);
+    free(seed->url);
+    free(seed);
 
     // while there are urls to crawl
-    ListNode *node;
+    ListNode *node; //= malloc(sizeof(ListNode));
     while ( (node = pop(theList)) != NULL ){
-        WebPage *pg = malloc(sizeof(WebPage));
-        pg = node->data;
+        WebPage *pg = node->page;
+        //pg = 
 
         // if the webpage is valid, write it to a file 
         if ( (status = GetWebPage(pg)) != 0 ){
@@ -189,12 +189,11 @@ int main(int argc, char* argv[]){
             // extract urls from the current html and add them to the list
             pos = 0;
             baseUrl = pg->url;
-            
             while( (pos = GetNextURL(pg->html, pos, baseUrl, &result)) > 0 ){
                 if(strncmp(URL_PREFIX, result, strlen(URL_PREFIX)) == 0){
                     // only add them to the list if they have not already been looked at
                     if ( NormalizeURL(result) != 0 ){
-                        if (lookUp(ht, result) == 0){                    
+                        if (lookUpURL(ht, result) == 0){                    
                             WebPage *page = malloc(sizeof(WebPage));
                             page->url = result;
                             page->depth = pg->depth + 1;
@@ -203,17 +202,25 @@ int main(int argc, char* argv[]){
                         }
                     }
                 }          
-            } 
-            //free(page);  
+            }   
         }
-        sleep(INTERVAL_PER_FETCH);
-        free(node);
+        sleep(.1);
+        // free memory
+        free(pg->url);
+        free(pg->html);
         free(pg);
-
+        free(node);
     }
-
+    
+    // free memory
+    free(fileName);
+    free(theList->head);
+    free(theList->tail);
+    free(theList);
+    free(depthString);
     freeHashTable(ht);
-    // curlcleanup curl
+    free(ht);
+    // cleanup curl
     curl_global_cleanup();
 
     return 0;

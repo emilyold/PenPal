@@ -1,0 +1,41 @@
+crawler.c
+All code was written and tested on iOS 10.10.3
+Edited with Sublime Text 2
+
+Usage without testing: ./indexer [TARGET_DIRECTORY] [INDEX_FILE] 
+Usage with testing: ./indexer [TARGET_DIRECTORY] [INDEX_FILE] [INDEX_FILE] [RELOAD_FILE]
+
+The TARGET_DIRECTORY should be a valid directory containing files to be read. The only files that will be processed from the directory are those with integer names.
+
+The INDEX_FILE must be a valid file. If there is already a file with that name, the program will not run in order to not overwrite the existing file.
+
+The RELOAD_FILE should be identical to the INDEX_FILE if the testing runs successfully. It cannot be the same file as the INDEX_FILE. 
+
+The second and third arguments must be the same file name for testing purposes.
+
+OUTPUTS:
+When two arguments are provided, the output of crawler will be written to INDEX_FILE. It will be a list of all the words encountered in the files from the TARGET_DIRECTORY. The format of each line of the file will be as follows:
+[word] [# of documents the word occurred in] [document ID] [frequency in doc] [document ID] [frequency in doc]…
+
+When four arguments are provided, crawler runs to test the capability to completely recreate the data structure that provided the information for the INDEX_FILE. When crawler is run with four arguments it will write to the INDEX_FILE the same way as when it is given two arguments, and then it will read the INDEX_FILE back in in order to recreate the data structure that represented it. Then the information from that new data structure will  be written to the RELOAD_FILE. If everything runs smoothly, the two files should ultimately contain the exact same information. This can be tested by sorting both files and using the diff command in unix.
+
+
+System Libraries:
+string.h — used to copy, compare, and create strings. Many functions from this library are utilized in order to format the input and output appropriately
+
+stdio.h — needed to read and write to files
+
+stdlib.h — needed for the exit function, allocating memory, and converting strings to integers
+
+
+Local inclues:
+hashtable.h — provides hash table functionality including the definition of the structs HashTableNode and HashTable
+
+web.h — provides string and word handling functionality
+
+file.h — provides directory, file handling functionality
+
+
+COMPILING:
+The program should be compiled using the make utility. The makefile is located in the src directory, and thus make will only work when compiling from the src directory. The makefile compiles crawler.c with the web.c, file.c and hashtable.c files, using the -Wall, -pedantic, and the -std=c11 options.
+ 
