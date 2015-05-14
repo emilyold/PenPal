@@ -19,3 +19,5 @@ debug: $(SRCS)
 clean:
 	rm -f *.o
 	rm -f *.h.gch
+	rm -f *.dat
+	rm -f indexer

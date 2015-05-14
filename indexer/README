@@ -27,6 +27,8 @@ stdio.h — needed to read and write to files
 
 stdlib.h — needed for the exit function, allocating memory, and converting strings to integers
 
+ctype.h — used for error checking in the reload 
+
 
 Local inclues:
 hashtable.h — provides hash table functionality including the definition of the structs HashTableNode and HashTable

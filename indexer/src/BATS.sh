@@ -41,6 +41,9 @@ sort $INDEX_FILE
 echo -e "\nCleaning up before reloading test..."
 make clean
 
+echo -e "\nRebuilding indexer to run the reloading test..."
+make
+
 echo -e "\nTesting the reloading capability of indexer..."
 ./indexer $DATA_PATH $INDEX_FILE $INDEX_FILE $NEW_FILE
 

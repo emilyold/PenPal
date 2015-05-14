@@ -21,9 +21,6 @@
 // ---------------- System includes e.g., <stdio.h>
 #include <stdio.h>                           
 #include <string.h>
-// #include <sys/types.h>
-// #include <sys/stat.h>
-// #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -63,21 +60,24 @@ typedef struct WordNode {
 char *LoadDocument(char *fileName){
 	int lineNum = 1;
 	FILE *fp;
-	
-	//char line[BUFSIZ];
 
+	/* make sure the files opens correctly */
     fp = fopen(fileName, "r");
     if (fp == NULL){
     	printf("Error opening file %s", fileName);
     }
 
+    /* allocate the appropriate amount of memory */
     fseek(fp, 0, SEEK_END);
     int len = ftell(fp);
     char *html = malloc(len);
     fseek(fp, 0, SEEK_SET);
+
+    /* read in the file character by character and add each character to the string */
     int ch;
     int i = 0;
     while ( (ch = fgetc(fp)) != EOF){
+    	/* skip the first two lines */
 		if (lineNum < 3 && ch == '\n'){
 			lineNum++;
 		}
@@ -282,7 +282,7 @@ int DocListLength(DocumentNode *doc){
 int SaveIndexToFile(HashTable *index, char *filePath){
 	int status = 1;
 	int i;
-	char numFiles[5];
+	char numFiles[10];
 	char genString[10];
 	FILE *fp;
 
@@ -361,7 +361,6 @@ HashTable *ReadFile(char *file){
 		exit(EXIT_FAILURE);
 	}
 
-
 	else{
 		/* set up the index to store data */
 		ht = malloc(sizeof(HashTable));
@@ -385,7 +384,6 @@ HashTable *ReadFile(char *file){
 
 			/* look at each token of the line in order */
 			while( token != NULL){
-				printf("counter: %d, token: %s\n", counter, token);
 
 				/* get the doc count of the current word */
 				if (counter == 2){
@@ -516,7 +514,6 @@ int main(int argc, char *argv[]){
 			pos = 0;
 			while ((pos = GetNextWord(doc, pos, &word)) > 0){
 				NormalizeWord(word);
-				//printf("%s\n", word);
 				UpdateIndex(word, docID, Index);
 				free(word);
 			}
