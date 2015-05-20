@@ -86,7 +86,10 @@ HashTableNode *lookUp(HashTable *ht, const char *hashKey){
     unsigned long hashVal = JenkinsHash(hashKey, MAX_HASH_SLOT);
     /* if nothing has been hashed to that index, the data is not in the
      * table yet, so return NULL */
-    if ( ht->table[hashVal]->data == NULL && ht->table[hashVal]->next == NULL){
+    if(ht->table[hashVal]==NULL){
+        return NULL;
+    }
+    if (ht->table[hashVal]->data == NULL && ht->table[hashVal]->next == NULL){
         return NULL;
     } 
 

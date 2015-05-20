@@ -16,6 +16,17 @@
 // ---------------- Constants
 
 // ---------------- Structures/Types
+typedef struct DocumentNode {
+  struct DocumentNode *next;         // pointer to the next member of the list.
+  int doc_id;                        // document identifier
+  int freq;                          // number of occurrences of the word
+} DocumentNode;
+
+typedef struct WordNode {
+  struct WordNode *next;            // pointer to the next word (for collisions)
+  char *word;                       // the word
+  DocumentNode *page;               // pointer to the first element of the page list.
+} WordNode;
 
 // ---------------- Public Variables
 

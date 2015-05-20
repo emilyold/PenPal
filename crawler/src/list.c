@@ -55,8 +55,8 @@ void initializeList(List *theList){
 
 	theList->head = head;
 	theList->tail = tail;
-	theList->head->page = NULL;
-	theList->tail->page = NULL;
+	theList->head->data = NULL;
+	theList->tail->data = NULL;
 
 	/* deal with the head */
 	theList->head->prev = NULL;
@@ -113,7 +113,7 @@ ListNode *pop(List *theList){
 void appendToList(List *theList, void *page){
 	
 	ListNode *node = malloc(sizeof(ListNode));
-	node->page = page;
+	node->data = page;
 
 	/* insert the new listNode directly before the tail */
 	node->prev = theList->tail->prev;

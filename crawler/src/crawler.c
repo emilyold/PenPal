@@ -167,7 +167,7 @@ int main(int argc, char* argv[]){
     // while there are urls to crawl
     ListNode *node; //= malloc(sizeof(ListNode));
     while ( (node = pop(theList)) != NULL ){
-        WebPage *pg = node->page;
+        WebPage *pg = node->data;
         //pg = 
 
         // if the webpage is valid, write it to a file 

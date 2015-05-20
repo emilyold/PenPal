@@ -1,20 +1,22 @@
 CC = gcc
 CFLAGS = -Wall -pedantic -std=c11
-CRAWLERDIR = ../../crawler/src/
+
 
 EXEC = indexer
-OBJS = indexer.o hashtable.o web.o file.o
-SRCS = indexer.c hashtable.c web.c file.c hashtable.h web.h file.h
+SRCS = indexer.c 
+CFILES=./indexer.c
 
-$(EXEC): $(OBJS)
-	$(CC) $(CFLAGS) -o $(EXEC) $(OBJS)
+UTILDIR=../../util/
+UTILFLAG=-ltseutil
+UTILLIB=$(UTILDIR)libtseutil.a
+UTILC=hashtable.c file.c web.c
+UTILH=$(UTILC:.c=.h)
 
-$(OBJS): $(SRCS)
-	$(CC) $(CFLAGS) -c $(SRCS)
+$(EXEC): $(SRCS) $(UTILDIR)tseutil.h $(UTILLIB)
+	$(CC) $(CFLAGS) -o $@ $(CFILES) -L$(UTILDIR) $(UTILFLAG)
 
-debug: $(SRCS)
-	$(CC) $(CFLAGS) -g -ggdb -c $(SRCS)
-	$(CC) $(CFLAGS) -g -ggdb -o $(EXEC) $(OBJS)
+$(UTILLIB): $(UTILC) $(UTILH)
+	cd $(UTILDIR); make;
 
 clean:
 	rm -f *.o
