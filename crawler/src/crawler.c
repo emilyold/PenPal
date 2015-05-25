@@ -146,6 +146,8 @@ int main(int argc, char* argv[]){
     if(seed->depth < depth){
         printf("[crawler]: Crawling - %s\n", seed->url);
         while( (pos = GetNextURL(seed->html, pos, baseUrl, &result)) > 0 ){
+            printf("%s", result);
+            printf("%s", URL_PREFIX);
             if(strncmp(URL_PREFIX, result, strlen(URL_PREFIX)) == 0){
                 if (NormalizeURL(result) != 0){
                     if(lookUpURL(ht, result) == 0){

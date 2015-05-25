@@ -15,7 +15,7 @@ $(OBJS): $(SRCS)
 
 debug: $(SRCS)
 	$(CC) $(CFLAGS) -g -ggdb -c $(SRCS)
-	$(CC) $(CFLAGS) -g -ggdb -o $(EXEC) $(OBJS)
+	$(CC) $(CFLAGS) -g -ggdb -lcurl -o $(EXEC) $(OBJS)
 
 clean:
 	rm -f *.o 

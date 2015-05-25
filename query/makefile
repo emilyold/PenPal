@@ -1,29 +1,27 @@
 CC = gcc
 CFLAGS = -Wall -pedantic -std=c11
-INDEXDIR = ../indexer/src/
 
 EXEC = query
-SRCS = ./src/query.c $(INDEXDIR)hashtable.c $(INDEXDIR)file.c $(INDEXDIR)web.c $(INDEXDIR)indexer_utils.c $(INDEXDIR)hashtable.h $(INDEXDIR)file.h $(INDEXDIR)web.h $(INDEXDIR)indexer_utils.h
-OBJS = query.o hashtable.o file.o web.o indexer_utils.o
-CFILES=./src/query.c
+SRCS = ./src/query.c ./src/operations.c ./src/operations.h
+CFILES=./src/query.c ./src/operations.c
 
 UTILDIR=../util/
 UTILFLAG=-ltseutil
 UTILLIB=$(UTILDIR)libtseutil.a
-UTILC=$(INDEXDIR)hashtable.c $(INDEXDIR)file.c $(INDEXDIR)web.c
+UTILC=$(UTILDIR)hashtable.c $(UTILDIR)file.c $(UTILDIR)web.c $(UTILDIR)indexer_utils.c
 UTILH=$(UTILC:.c=.h)
 
-$(EXEC): $(OBJS) 
-	$(CC) $(CFLAGS) -o $@ $(OBJS)
+$(EXEC): $(SRCS) $(UTILH) $(UTILLIB)
+	$(CC) $(CFLAGS) -o $@ $(CFILES) -L$(UTILDIR) $(UTILFLAG)
+	
 
-$(OBJS): $(SRCS)
-	$(CC) $(CFLAGS) -c $(SRCS)
+$(UTILLIB): $(UTILC) $(UTILH)
+	cd $(UTILDIR); make;
 
 debug: $(SRCS)
-	$(CC) $(CFLAGS) -g -ggdb -c $(SRCS)
-	$(CC) $(CFLAGS) -g -ggdb -o $(EXEC) $(OBJS)
-
+	$(CC) $(CFLAGS) -g -ggdb -o $(EXEC) $(CFILES) -L$(UTILDIR) $(UTILFLAG)
 clean:
+	cd $(UTILDIR); make clean;
 	rm -f *.o
 	rm -f *.h.gch
 	rm -f query
