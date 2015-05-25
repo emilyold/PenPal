@@ -1,5 +1,5 @@
-// Filename: Test cases for dictionary.h/.c
-// Description: A unit test for dictionary data structure
+// Filename: Test cases for operations.h/c 
+// Description: A unit test for the functions used by the query engine
 // 
 
 //
@@ -8,77 +8,21 @@
 //
 //  It uses these files but they are not unit tested in this test harness:
 //
-//  DICTIONARY* InitDictionary();
-//  int make_hash(char* c);
-//  void CleanDictionary(DICTIONARY* dict)
-// 
+//  void initializeHashTable(HashTable *ht)
+//  void ReadFile(char *filename, HashTable *ht)
+//  void FreeHashTable(HashTable *ht)
+//  void FreeDocList(DcumentNode *head)
+//
 //  It tests the following functions:
 //
-//   void DAdd(DICTIONARY* dict, void* data, char* key);
-//   void DRemove(DICTIONARY* dict, char* key);
-//   void* GetDataWithKey(DICTIONARY* dict, char* key);
+//   DocumentNode *CopyListData(DocumentNode *head)
+//   DocumentNode *ANDUpdate(DocumentNode *first, DocumentNode *second)
+//   DocumentNode *ORUpdate(DocumentNode *first, DocumentNode *second)
+//   DocumentNode *CreateUnsortedDocList(char *input, HashTable *ht)
+//   void SortDocList(DocumentNode *head)
 //
 //  If any of the tests fail it prints status 
 //  If all tests pass it prints status.
-//
-//  Test Cases:
-//  -----------
-//   
-//  The test harness runs a number of test cases to test the code.
-//  The approach is to first set up the environment for the test,
-//  invoke the function to be tested, then validate the state of
-//  the data structures using the SHOULD_BE macro. This is repeated
-//  for each test case. 
-//
-//  The test harness isolates the functions under test and setting
-//  up the environment the code expects when integrated in the real
-//  system.
-//
-//  The test harness dummies out the real hash function and through
-//  use of a variable called hash manipulates where DNODEs are 
-//  inserted into the DICTIONARY. For example, collisions can be controlled. 
-//
-//  The following test cases  (1-3) are for function:
-//
-//  void DAdd(DICTIONARY* dict, void* data, char* key);
-//
-//  Test case: DADD:1
-//  This test case calls DAdd() for the condition where dict is empty
-//  result is to add a DNODE to the dictionary and look at its values.
-//
-//  Test case: DADD:2
-//  This test case calls DAdd() puts multiple DNODEs on the dict when there is no hash collisions
-//  We put multiply elements in dictionary with no collisions.
-//
-//  Test case: DADD:3
-//  This test case calls DAdd() puts multiple DNODEs on the dict when there is hash collisions
-//  We put multiply elements in dictionary with collisions.
-//
-//  The following test cases (1-4) for function:
-//
-//  void DRemove(DICTIONARY* dict, char* key);
-//
-//  Test case:DREMOVE:1
-//  This test case DAdd() and DRemove()  DNODE from dict for only one element.
-//
-//  Test case:DREMOVE:2
-//  This test case is tries to see how DRemove() works with multiple nodes for the same 
-//  hash value, the node to be deleted is at the end of the dynamic list.
-//
-//  Test case:DREMOVE:3
-//  This test case is tries to see how DRemove() works with multiple nodes of the same hash value, 
-//  the node to be deleted is at the start of the dynamic list.
-//
-//  Test case:DREMOVE:4
-//  This test case is tries to see how DRemove() works with multiple nodes of the same hash value, 
-//  the node to be deleted is at the middle of the dynamic list.
-//
-//  The following test cases (1) for function:
-//
-//  void* GetDataWithKey(DICTIONARY* dict, char* key);
-//
-//  Test case:GetDataWithKey:1
-//  This test case tests GetDataWithKey - to get a data with the a certain key.
 //
 
 #include <stdio.h>
@@ -130,10 +74,8 @@
     
 HashTable *ht;
 
-// Test case: DADD:1
-// This test case calls DAdd() for the condition where dict is empty
-// result is to add a DNODE to the dictionary and look at its values.
-
+// Test case: CopyListData:1
+// This test case calls the function on an empty list
 int TestCopyListData1() {
   START_TEST_CASE;
 
@@ -155,10 +97,8 @@ int TestCopyListData1() {
   END_TEST_CASE;
 }
 
-// Test case: DADD:2
-// This test case calls DAdd() puts multiple DNODEs on the dict when there is no hash collisions
-// We put multiply elements in dictionary with no collisions.
-
+// Test case: CopyListData:2
+// This test case calls the function on a list with three elements.
 int TestCopyListData2() {
   START_TEST_CASE;
   DocumentNode *first = malloc(sizeof(DocumentNode));
@@ -191,10 +131,8 @@ int TestCopyListData2() {
 }
 
 
-// Test case: DADD:3
-// This test case calls DAdd() puts multiple DNODEs on the dict when there is hash collisions
-// We put multiply elements in dictionary with collisions.
-
+// Test case: ANDUpdate:1
+// Calls the function on two lists that have two documents in common
 int TestANDUpdate1() {
   START_TEST_CASE;
   DocumentNode *one = malloc(sizeof(DocumentNode));
@@ -233,8 +171,8 @@ int TestANDUpdate1() {
   END_TEST_CASE;
 }
 
-// Test case:DREMOVE:1
-// This test case DAdd() and DRemove()  DNODE from dict for only one element.
+// Test case:ANDUpdate:2
+// Calls the function with an empty list as the second parameter.
 int TestANDUpdate2() {
   START_TEST_CASE;
 
@@ -262,9 +200,8 @@ int TestANDUpdate2() {
 }
 
 
-// Test case:DREMOVE:2
-// This test case is tries to see how DRemove() works with multiple nodes for the same hash value, the node to be deleted is at the end of the dynamic list.
-
+// Test case:ANDUpdate:3
+// Calls the function with an empty list as the first parameter.
 int TestANDUpdate3() {
   START_TEST_CASE;
   DocumentNode *one = NULL;
@@ -289,6 +226,8 @@ int TestANDUpdate3() {
   END_TEST_CASE;
 }
 
+// Test case:ANDUpdate:4
+// Calls the function with two empty lists as the parameters
 int TestANDUpdate4(){
   START_TEST_CASE;
   DocumentNode *one = NULL;
@@ -300,10 +239,8 @@ int TestANDUpdate4(){
   END_TEST_CASE;
 }
 
-
-// Test case:DREMOVE:3
-// This test case is tries to see how DRemove() works with multiple nodes of the same hash value, the node to be deleted is at the start of the dynamic list
-
+// Test case: ORUpdate:1
+// Calls the function on two lists that have two documents in common
 int TestORUpdate1() {
   START_TEST_CASE;
   DocumentNode *one = malloc(sizeof(DocumentNode));
@@ -346,8 +283,8 @@ int TestORUpdate1() {
 }
 
 
-// Test case:DREMOVE:4
-// This test case is tries to see how DRemove() works with multiple nodes of the same hash value, the node to be deleted is at the middle of the dynamic list
+// Test case:ORUpdate:2
+// calls the function with an empty list as the second parameter
 int TestORUpdate2() {
   START_TEST_CASE;
   DocumentNode *one = malloc(sizeof(DocumentNode));
@@ -377,8 +314,9 @@ int TestORUpdate2() {
   END_TEST_CASE;
 }
 
-// Test case:GetDataWithKey:1
-// This test case tests GetDataWithKey - to get a data with the a certain key.
+
+// Test case:ORUpdate:3
+// calls the function with an empty list as the first parameter
 int TestORUpdate3() {
   START_TEST_CASE;
   DocumentNode *one = NULL;
@@ -408,6 +346,9 @@ int TestORUpdate3() {
   END_TEST_CASE;
 }
 
+
+// Test case:ORUpdate:4
+// calls the function with two empy lists as the parameters
 int TestORUpdate4(){
   START_TEST_CASE;
   DocumentNode *one = NULL;
@@ -419,6 +360,8 @@ int TestORUpdate4(){
   END_TEST_CASE;
 }
 
+// Test case:CreateUnsortedDocList:1
+// calls the function with one word that occurs in one document as the input
 int TestCreateUnsortedDocList1(){
   START_TEST_CASE;
 
@@ -434,6 +377,8 @@ int TestCreateUnsortedDocList1(){
   END_TEST_CASE;
 }
 
+// Test case:CreateUnsortedDocList:2
+// calls the function with one word that occurs in two documents as the input
 int TestCreateUnsortedDocList2(){
   START_TEST_CASE;
   
@@ -450,7 +395,8 @@ int TestCreateUnsortedDocList2(){
   END_TEST_CASE;
 }
 
-int TestCreateUnsortedDocList3(){
+// Test case:CreateUnsortedDocList:3
+// calls the function with one word that is not in the hashtable
   START_TEST_CASE;
   
   DocumentNode *list = CreateUnsortedDocList("badword", ht);
@@ -462,6 +408,8 @@ int TestCreateUnsortedDocList3(){
   END_TEST_CASE;
 }
 
+// Test case:CreateUnsortedDocList:4
+// calls the function with the AND operator and two words that have one document in common
 int TestCreateUnsortedDocList4(){
   START_TEST_CASE;
   
@@ -476,6 +424,8 @@ int TestCreateUnsortedDocList4(){
   END_TEST_CASE;
 }
 
+// Test case:CreateUnsortedDocList:5
+// calls the function with the OR operator and two words that have one word in common
 int TestCreateUnsortedDocList5(){
   START_TEST_CASE;
   
@@ -492,6 +442,8 @@ int TestCreateUnsortedDocList5(){
   END_TEST_CASE;
 }
 
+// Test case:CreateUnsortedDocList:5
+// tests the function's ability to consider the precidence of AND over OR
 int TestCreateUnsortedDocList6(){
   START_TEST_CASE;
   
@@ -508,6 +460,8 @@ int TestCreateUnsortedDocList6(){
   END_TEST_CASE;
 }
 
+// Test case:SortDocList:1
+// sorts list of three DocumentNodes 
 int TestSortDocList(){
   START_TEST_CASE;
 
@@ -540,20 +494,23 @@ int TestSortDocList(){
 
 
 
-// This is the main test harness for the set of dictionary functions. It tests all the code
-// in dictionary.c:
+// This is the main test harness for the set of query engine functions. It tests the code
+// in operations.c:
 //
 //  It uses these files but they are not unit tested in this test harness:
 //
-//  DICTIONARY* InitDictionary();
-//  int make_hash(char* c);
-//  void CleanDictionary(DICTIONARY* dict)
-// 
-//  It test the following functions:
+//  void initializeHashTable(HashTable *ht)
+//  void ReadFile(char *filename, HashTable *ht)
+//  void FreeHashTable(HashTable *ht)
+//  void FreeDocList(DcumentNode *head)
 //
-//   void DAdd(DICTIONARY* dict, void* data, char* key);
-//   void DRemove(DICTIONARY* dict, char* key);
-//   void* GetDataWithKey(DICTIONARY* dict, char* key);
+//  It tests the following functions:
+//
+//   DocumentNode *CopyListData(DocumentNode *head)
+//   DocumentNode *ANDUpdate(DocumentNode *first, DocumentNode *second)
+//   DocumentNode *ORUpdate(DocumentNode *first, DocumentNode *second)
+//   DocumentNode *CreateUnsortedDocList(char *input, HashTable *ht)
+//   void SortDocList(DocumentNode *head)
 //
 //  If any of the tests fail it prints status 
 //  If all tests pass it prints status.
