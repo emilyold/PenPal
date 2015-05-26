@@ -25,10 +25,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 // ---------------- Local includes  e.g., "file.h"
-#include "web.h"  						  // webpage functionality
-#include "hashtable.h"  // hashtable functionality
-#include "file.h"                         // checking file functionality
-#include "indexer_utils.h"
+#include "../../util/web.h"  						  // webpage functionality
+#include "../../util/hashtable.h"  // hashtable functionality
+#include "../../util/file.h"                         // checking file functionality
+#include "../../util/indexer_utils.h"
 
 // ---------------- Constant definitions
 

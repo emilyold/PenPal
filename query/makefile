@@ -20,8 +20,13 @@ $(UTILLIB): $(UTILC) $(UTILH)
 
 debug: $(SRCS)
 	$(CC) $(CFLAGS) -g -ggdb -o $(EXEC) $(CFILES) -L$(UTILDIR) $(UTILFLAG)
+
+test:
+	cd test; make;
+
 clean:
 	cd $(UTILDIR); make clean;
 	rm -f *.o
 	rm -f *.h.gch
 	rm -f query
+	rm -f query_test

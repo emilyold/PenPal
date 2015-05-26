@@ -451,7 +451,6 @@ int ReportInfo(DocumentNode *head, char *directory){
 	while(curr != NULL){
 		/* get the name of the current file */
 		int docID = curr->doc_id;
-		int freq = curr->freq;
 		sprintf(fileName, "%s/%d", directory, docID);
 
 		/* make sure the file opens properly */
@@ -475,7 +474,7 @@ int ReportInfo(DocumentNode *head, char *directory){
     		fseek(fp, 0, SEEK_SET);
     		char url[count+1];
 			if (fgets(url, count, fp) != NULL){
-				printf("Document ID: %d Frequency: %d URL: %s\n", docID, freq, url);
+				printf("Document ID: %d URL: %s\n", docID, url);
 			}
 			fclose(fp);
 		}

@@ -170,7 +170,7 @@ void FreeIndex(HashTable *index){
  */ 
 void ReadFile(char *file, HashTable *ht){
 	//HashTable *ht; // new index
-	char line[BUFSIZ*2]; // where each line of the file will be stored
+	char line[BUFSIZ*3]; // where each line of the file will be stored
 	const char delim[2] = " \n"; // delimiter used to parse each line of the file
 	char *word; // pointer to current word being read of the file
 	long int docCount;
@@ -192,7 +192,7 @@ void ReadFile(char *file, HashTable *ht){
 		int counter; // token counter
 		char *ptr;	 // pointer for strtol 
 		/* read the file line by line */
-		while (fgets(line, BUFSIZ*2, fp) != NULL){
+		while (fgets(line, BUFSIZ*3, fp) != NULL){
 
 			/* parse the current line and store the word as the first token */
 			token = strtok(line, delim);

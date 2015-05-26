@@ -19,3 +19,6 @@ debug: $(SRCS)
 
 clean:
 	rm -f *.o 
+	rm -f crawler
+	rm -f *.h.gch
+	

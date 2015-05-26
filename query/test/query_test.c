@@ -397,6 +397,7 @@ int TestCreateUnsortedDocList2(){
 
 // Test case:CreateUnsortedDocList:3
 // calls the function with one word that is not in the hashtable
+int TestCreateUnsortedDocList3(){
   START_TEST_CASE;
   
   DocumentNode *list = CreateUnsortedDocList("badword", ht);
