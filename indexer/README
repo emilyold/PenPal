@@ -1,5 +1,5 @@
 indexer.c
-All code was written and tested on iOS 10.10.3
+All code was written and tested on OSX 10.10.3
 Edited with Sublime Text 2
 
 Usage without testing: ./indexer [TARGET_DIRECTORY] [INDEX_FILE] 
