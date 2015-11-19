@@ -1,5 +1,5 @@
 crawler.c
-All code was written and tested on iOS 10.10.3
+All code was written and tested on OSX 10.10.3
 Edited with Sublime Text 2
 
 INPUTS:
@@ -40,15 +40,3 @@ utils.h — primarily used for debugging
 
 COMPILING:
 crawler should be compiled using the makefile in the src directory. The makefile compiles the crawler.c file with the web.c, list.c hashtable.c, using ggc with the -Wall, -pedantic, -std=c11, and -lcurl options. 
-
-Other considerations:
-1. In order to prevent internal references being as counting as different web pages, and therefore avoid duplicate htmls being written to the output files, I added a small block of code provided by Saisi the TA to the NormalizeURL function in web.c.
-
-2. The CURLOPT_FAILONERROR option is used in the GetWebPage function in web.c to handle 4xx error codes.
-
-3. There are currently memory leaks in the code.
-
-4. The crawlerTest.sh script runs multiple tests on a compiled crawler file. The output of a test file  redirected to a log file: crawlerTestlog.‘date +"%a_%b_%d_%T_%Y"‘ This test script uses ./testdir as a valid directory and ./baddir as an invalid directory because I use ./testdir as the directory to where I wrote the output files. If it is run in a directory where ./testdir does not exist, the output may be different from that in my log.
-
-
-
