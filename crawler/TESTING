@@ -1,3 +1,0 @@
-crawler
-
-Tested for edge cases using crawlerTest.sh, and my own input in the command line. If a url that is unable to be curled, or does not have the correct prefix is passed as the first argument, the program quits and an error message is printed. If an invalid directory is provided (does not exit or is not reachable from current directory), the program will quit and an error message will print. If a depth that exceeds the maximum depth, or is not an integer is provided, the program quits and will print an error message. 
