@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Daily Weather</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="add_city_hint">City Name</string>
+    <string name="min_temp_header">Min Temperature:</string>
+    <string name="max_temp_header">Max Temperature:</string>
+    <string name="sunrise_header">Sunrise:</string>
+    <string name="sunset_header">Sunset:</string>
+    <string name="pressure_header">Pressure:</string>
+    <string name="humidity_header">Humidity:</string>
+    <string name="temp_header">Temperature:</string>
+</resources>
